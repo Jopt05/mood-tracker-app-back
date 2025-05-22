@@ -11,6 +11,17 @@ import { CustomError } from "../../domain/errors/custom.error";
 export class UserService {
     constructor() {}
 
+    public async getUser( userId: number ) {
+        const userExists = await prisma.user.findFirst({
+            where: {
+                id: userId
+            }
+        });
+        if( !userExists ) throw CustomError.badRequest('User with provided ID does not exist');
+
+        return UserEntity.fromObject( userExists );
+    }
+
     public async createUser( registerUserDto: RegisterUserDto ) {
         const emailExists = await prisma.user.findFirst({
             where: {

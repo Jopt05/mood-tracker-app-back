@@ -15,6 +15,7 @@ export class UserRoutes {
     const controller = new UsersController(userService);
     
     // Definir las rutas
+    router.get('/:id', controller.getUser );
     router.post('/', controller.registerUser );
     router.post('/login', controller.loginUser );
     router.put('/:id', [ AuthMiddleware.validateJWT ], controller.updateUser );

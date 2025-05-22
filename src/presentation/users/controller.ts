@@ -13,6 +13,19 @@ export class UsersController {
     public readonly userService: UserService,
   ) {}
 
+  getUser = (req: Request, res: Response) => {
+    try {
+      const id = +req.params.id;
+      if( !id ) throw CustomError.badRequest('Id is mising');
+      
+      this.userService.getUser(id)
+        .then((user) => ResponseMapper.success(res, 'User obtained', 200, user))
+        .catch((error) => ResponseMapper.fail(error, res))
+    } catch (error) {
+        ResponseMapper.fail(error,res);
+    }
+  }
+
   registerUser = (req: Request, res: Response) => {
     try {
         const [ error, registerDto ] = RegisterUserDto.create(req.body);
