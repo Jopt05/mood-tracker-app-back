@@ -1,5 +1,6 @@
 import express, { Router } from 'express';
 import path from 'path';
+import cors from 'cors';
 
 interface Options {
   port: number;
@@ -25,6 +26,7 @@ export class Server {
   async start() {
     //* Middlewares
     this.app.use( express.json() ); // raw
+    this.app.use( cors() )
     this.app.use( express.urlencoded({ extended: true }) ); // x-www-form-urlencoded
 
     //* Public Folder
