@@ -18,4 +18,34 @@ model user {
   updatedAt DateTime @default(now())
   password String
   photoUrl String?
+  entries MoodEntry[]
+}
+
+model MoodEntry {
+  id Int @id @default(autoincrement())
+  mood Mood @default(NEUTRAL)
+  sleep Sleep @default(ZER0_TWO)
+  reflection String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  authorId Int
+  author user @relation(fields: [authorId], references: [id])
+
+  @@map("mood_entries")
+}
+
+enum Mood {
+  VERY_SAD
+  SAD
+  NEUTRAL
+  HAPPY
+  VERY_HAPPY
+}
+
+enum Sleep {
+  ZER0_TWO
+  THREE_FOUR
+  FIVE_SIX
+  SEVEN_EIGHT
+  NINE
 }
