@@ -1,3 +1,4 @@
+import { Request } from "express";
 import { bcryptAdapter } from "../../config/bycrypt.adapter";
 import { JwtAdapter } from "../../config/jwt.adapter";
 import { prisma } from "../../data/postgres";
@@ -47,7 +48,7 @@ export class UserService {
         };
     }
 
-    public async updateUser( updateUserDto: UpdateUserDto ) {
+    public async updateUser(updateUserDto: UpdateUserDto ) {
         const user = await prisma.user.findFirst({
             where: {
                 id: updateUserDto.id

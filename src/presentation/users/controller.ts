@@ -45,6 +45,8 @@ export class UsersController {
         const [error, updateUserDto] = UpdateUserDto.create({...req.body, id});
         if( error ) throw CustomError.badRequest(error);
 
+        if( id !== req.body.user.id ) throw CustomError.forbidden('You cant do this')
+
         this.userService.updateUser(updateUserDto!)
             .then((user) => ResponseMapper.success(res, 'User updated', 200, user))
             .catch((error) => ResponseMapper.fail(error, res))
