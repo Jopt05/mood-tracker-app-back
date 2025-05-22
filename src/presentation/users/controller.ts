@@ -13,6 +13,19 @@ export class UsersController {
     public readonly userService: UserService,
   ) {}
 
+  getMe = (req: Request, res: Response) => {
+    try {
+      if( !req?.body?.user ) throw CustomError.badRequest('Token not provided');
+      const { user } = req.body;
+      
+      this.userService.getUser(user.id)
+        .then((user) => ResponseMapper.success(res, 'User obtained', 200, user))
+        .catch((error) => ResponseMapper.fail(error, res))
+    } catch (error) {
+        ResponseMapper.fail(error,res);
+    }
+  }
+
   getUser = (req: Request, res: Response) => {
     try {
       const id = +req.params.id;
