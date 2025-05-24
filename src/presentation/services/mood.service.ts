@@ -14,7 +14,7 @@ export class MoodService {
             },
             take: 10,
             orderBy: {
-                createdAt: "desc"
+                createdAt: "asc"
             }
         });
 
