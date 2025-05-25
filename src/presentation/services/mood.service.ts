@@ -31,12 +31,11 @@ export class MoodService {
         if( !userExists ) throw CustomError.badRequest('User does not exist');
 
         const todayDate = new Date();
-        const yesterdayDate = new Date( todayDate.setDate( todayDate.getDate() - 1 ) );
         
         const existingMoodEntry = await prisma.moodEntry.findFirst({
             where: {
                 createdAt: {
-                    gt: yesterdayDate
+                    gte: todayDate
                 },
                 authorId: createMoodDto.authorId
             }
