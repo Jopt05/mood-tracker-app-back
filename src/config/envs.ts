@@ -7,6 +7,7 @@ export const envs = {
   PUBLIC_PATH: get('PUBLIC_PATH').default('public').asString(),
   POSTGRES_URL: get('POSTGRES_URL').default('public').asString(),
   JWT_SEED: get('JWT_SEED').required().asString(),
+  API_NINJAS_KEY: get('API_NINJAS_KEY').required().asString(),
 
 }
 
