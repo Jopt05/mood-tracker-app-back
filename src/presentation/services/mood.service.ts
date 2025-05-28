@@ -1,5 +1,6 @@
 import { prisma } from "../../data/postgres";
 import { CreateMoodDto } from "../../domain/dtos/create-mood.dto";
+import { PaginationDto } from "../../domain/dtos/shared/pagination.dto";
 import { UpdateMoodDto } from "../../domain/dtos/update-mood.dto";
 import { MoodEntity } from "../../domain/entities/mood.entity";
 import { CustomError } from "../../domain/errors/custom.error";
@@ -7,18 +8,35 @@ import { CustomError } from "../../domain/errors/custom.error";
 export class MoodService {
     constructor() {}
 
-    public async getMyMood( userId: number ) {
+    public async getMyMood( userId: number, paginationDto: PaginationDto ) {
+
+        const { page, limit } = paginationDto;
+
         const moodData = await prisma.moodEntry.findMany({
             where: {
                 authorId: userId
             },
-            take: 10,
+            skip: (page - 1) * limit,
+            take: limit,
             orderBy: {
                 createdAt: "asc"
             }
         });
 
-        return moodData.map(entry => MoodEntity.fromObject(entry));
+        const totalCount = await prisma.moodEntry.count({
+            where: {
+                authorId: userId
+            }
+        });
+
+        return {
+            page: page,
+            limit: limit,
+            total: totalCount,
+            next: `/api/mood?page=${page + 1}&limit=${limit}`,
+            previous: (page - 1 > 0) ? `/api/mood?page=${page - 1}&limit=${limit}` : null,
+            mood: moodData.map(entry => MoodEntity.fromObject(entry))
+        };
     }
 
     public async createMoodEntry( createMoodDto: CreateMoodDto ) {

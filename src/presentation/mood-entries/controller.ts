@@ -4,6 +4,7 @@ import { ResponseMapper } from "../../domain/responses/success";
 import { CustomError } from "../../domain/errors/custom.error";
 import { CreateMoodDto } from "../../domain/dtos/create-mood.dto";
 import { UpdateMoodDto } from "../../domain/dtos/update-mood.dto";
+import { PaginationDto } from "../../domain/dtos/shared/pagination.dto";
 
 export class MoodController {
 
@@ -16,7 +17,11 @@ export class MoodController {
             const { user } = req.body;
             if( !user ) throw CustomError.notFound('Token not sent');
 
-            this.moodService.getMyMood(user.id)
+            const { page = 1, limit = 10 } = req.query;
+            const [ error, paginationDto ] = PaginationDto.create( +page, +limit );
+            if( error ) throw CustomError.badRequest(error);
+
+            this.moodService.getMyMood(user.id, paginationDto!)
                 .then((user) => ResponseMapper.success(res, 'Moods obtained', 200, user))
                 .catch((error) => ResponseMapper.fail(error, res))
         } catch (error) {
