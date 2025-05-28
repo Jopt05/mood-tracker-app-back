@@ -7,9 +7,14 @@ import { LoginUserDto } from "../../domain/dtos/login-user.dto";
 import { UpdateUserDto } from "../../domain/dtos/update-user.dto";
 import { UserEntity } from "../../domain/entities/user.entity";
 import { CustomError } from "../../domain/errors/custom.error";
+import { EmailService } from "./mailer.service";
+import { envs } from "../../config/envs";
 
 export class UserService {
-    constructor() {}
+
+    constructor(
+        private mailService: EmailService
+    ) {}
 
     public async getUser( userId: number ) {
         const userExists = await prisma.user.findFirst({
@@ -75,5 +80,37 @@ export class UserService {
         });
 
         return UserEntity.fromObject(updatedUser)
+    }
+
+    public async sendResetPassword( userId: number ) {
+        const user = await prisma.user.findFirst({
+            where: {
+                id: userId
+            }
+        });
+        if( !user ) throw CustomError.badRequest(`User with id: ${userId} does not exist`)
+
+        const token = await JwtAdapter.generateToken({id: user.id}, '1h');
+
+        const link = `${ envs.FRONT_URL }/auth/reset-password/${ token }`;
+        console.log({link})
+        const html = `
+        <h1>Reset your password</h1>
+        <p>Click on the following link to reset your password</p>
+        <a href="${ link }">Click here</a>
+        `;
+
+        const options = {
+            to: user.email,
+            subject: 'Reset your password | Mood tracker',
+            htmlBody: html,
+        }
+
+        const isSent = await this.mailService.sendEmail(options);
+        if ( !isSent ) throw CustomError.internalServer('Error sending email');
+
+        return {
+            sent: isSent
+        }
     }
 }

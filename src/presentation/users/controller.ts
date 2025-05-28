@@ -81,4 +81,17 @@ export class UsersController {
     }
   }
 
+  requestResetPassword = (req: Request, res: Response) => {
+    try {
+      if( !req?.body?.user ) throw CustomError.badRequest('Token not provided');
+      const { user } = req.body;
+
+        this.userService.sendResetPassword(user.id)
+            .then((user) => ResponseMapper.success(res, 'Email sent', 200, user))
+            .catch((error) => ResponseMapper.fail(error, res))
+    } catch (error) {
+        ResponseMapper.fail(error, res);
+    }
+  }
+
 }
