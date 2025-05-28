@@ -19,7 +19,7 @@ export class MoodService {
             skip: (page - 1) * limit,
             take: limit,
             orderBy: {
-                createdAt: "asc"
+                createdAt: "desc"
             }
         });
 

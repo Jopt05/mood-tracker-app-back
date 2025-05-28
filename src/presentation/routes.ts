@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { UserRoutes } from './users/routes';
 import { MoodRoutes } from './mood-entries/routes';
+import { AdiceRoutes } from './advices/controller';
 
 export class AppRoutes {
 
@@ -11,6 +12,7 @@ export class AppRoutes {
 
     router.use('/api/users', UserRoutes.routes );
     router.use('/api/moods', MoodRoutes.routes );
+    router.use('/api/advices', AdiceRoutes.routes );
 
     return router;
   }
