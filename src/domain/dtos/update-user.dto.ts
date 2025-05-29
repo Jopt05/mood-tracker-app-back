@@ -5,6 +5,7 @@ export class UpdateUserDto {
     public email?: string,
     public name?: string,
     public photoUrl?: string,
+    public password?: string,
   ) {}
 
   get values() {
@@ -13,18 +14,19 @@ export class UpdateUserDto {
     if( this.email ) returnObj.email = this.email;
     if( this.name ) returnObj.name = this.name;
     if( this.photoUrl ) returnObj.photoUrl = this.photoUrl;
+    if( this.password ) returnObj.password = this.password;
 
     return returnObj;
   }
 
   static create( object: { [key:string]:any } ): [string?, UpdateUserDto?] {
-    const { id, email, name, photoUrl } = object;
+    const { id, email, name, photoUrl, password } = object;
 
     if ( !id || isNaN( Number(id)) ) {
       return ['id must be a valid number'];
     }
 
-    return [undefined, new UpdateUserDto(id, email, name, photoUrl)];
+    return [undefined, new UpdateUserDto(id, email, name, photoUrl, password)];
   }
 
 

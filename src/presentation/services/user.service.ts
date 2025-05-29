@@ -76,7 +76,10 @@ export class UserService {
             where: {
                 id: user.id
             },
-            data: updateUserDto.values
+            data: {
+                ...updateUserDto.values,
+                ...(updateUserDto.password) && { password: bcryptAdapter.hash(updateUserDto.password) }
+            }
         });
 
         return UserEntity.fromObject(updatedUser)
