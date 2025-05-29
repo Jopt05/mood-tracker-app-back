@@ -95,7 +95,7 @@ export class UserService {
 
         const token = await JwtAdapter.generateToken({id: user.id}, '1h');
 
-        const link = `${ envs.FRONT_URL }/auth/reset-password/${ token }`;
+        const link = `${ envs.FRONT_URL }/auth/reset-password?token=${ token }`;
         console.log({link})
         const html = `
         <h1>Reset your password</h1>
