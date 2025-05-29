@@ -67,11 +67,11 @@ export class UsersController {
 
   updateUser = (req: Request, res: Response) => {
     try {
-        const id = +req.params.id;
-        const [error, updateUserDto] = UpdateUserDto.create({...req.body, id});
-        if( error ) throw CustomError.badRequest(error);
+        if( !req?.body?.user ) throw CustomError.badRequest('Token not provided');
+        const { user } = req.body;
 
-        if( id !== req.body.user.id ) throw CustomError.forbidden('You cant do this')
+        const [error, updateUserDto] = UpdateUserDto.create({...req.body, id: user.id});
+        if( error ) throw CustomError.badRequest(error);
 
         this.userService.updateUser(updateUserDto!)
             .then((user) => ResponseMapper.success(res, 'User updated', 200, user))

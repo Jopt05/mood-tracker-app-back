@@ -29,7 +29,7 @@ export class UserRoutes {
     router.get('/:id', controller.getUser );
     router.post('/', controller.registerUser );
     router.post('/login', controller.loginUser );
-    router.put('/:id', [ AuthMiddleware.validateJWT ], controller.updateUser );
+    router.put('/', [ AuthMiddleware.validateJWT ], controller.updateUser );
 
     return router;
   }
