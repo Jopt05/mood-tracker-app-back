@@ -85,13 +85,13 @@ export class UserService {
         return UserEntity.fromObject(updatedUser)
     }
 
-    public async sendResetPassword( userId: number ) {
+    public async sendResetPassword( userEmail: string ) {
         const user = await prisma.user.findFirst({
             where: {
-                id: userId
+                email: userEmail
             }
         });
-        if( !user ) throw CustomError.badRequest(`User with id: ${userId} does not exist`)
+        if( !user ) throw CustomError.badRequest(`User with email: ${userEmail} does not exist`)
 
         const token = await JwtAdapter.generateToken({id: user.id}, '1h');
 

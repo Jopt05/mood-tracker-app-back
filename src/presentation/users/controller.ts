@@ -5,6 +5,7 @@ import { UserService } from '../services/user.service';
 import { ResponseMapper } from '../../domain/responses/success';
 import { LoginUserDto } from '../../domain/dtos/login-user.dto';
 import { UpdateUserDto } from '../../domain/dtos/update-user.dto';
+import { RequestResetDto } from '../../domain/dtos/request-reset.dto';
 
 export class UsersController {
 
@@ -83,10 +84,10 @@ export class UsersController {
 
   requestResetPassword = (req: Request, res: Response) => {
     try {
-        const id = +req.params.id;
-        if( !id ) throw CustomError.badRequest('Id is mising');
+        const [error, resetPassDto] = RequestResetDto.create(req.body);
+        if( error ) throw CustomError.badRequest(error);
 
-        this.userService.sendResetPassword(id)
+        this.userService.sendResetPassword(resetPassDto?.email!)
             .then((user) => ResponseMapper.success(res, 'Email sent', 200, user))
             .catch((error) => ResponseMapper.fail(error, res))
     } catch (error) {

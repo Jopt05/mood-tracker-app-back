@@ -25,7 +25,7 @@ export class UserRoutes {
     
     // Definir las rutas
     router.get('/', [ AuthMiddleware.validateJWT ], controller.getMe );
-    router.get('/auth/reset-password/:id', controller.requestResetPassword );
+    router.post('/auth/reset-password', controller.requestResetPassword );
     router.get('/:id', controller.getUser );
     router.post('/', controller.registerUser );
     router.post('/login', controller.loginUser );
