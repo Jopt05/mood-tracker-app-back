@@ -9,11 +9,14 @@ import { UserEntity } from "../../domain/entities/user.entity";
 import { CustomError } from "../../domain/errors/custom.error";
 import { EmailService } from "./mailer.service";
 import { envs } from "../../config/envs";
+import { CloudinaryService } from "./cloudinary.service";
+import { UploadedFile } from "express-fileupload";
 
 export class UserService {
 
     constructor(
-        private mailService: EmailService
+        private mailService: EmailService,
+        private cloudinaryService: CloudinaryService
     ) {}
 
     public async getUser( userId: number ) {
@@ -64,21 +67,29 @@ export class UserService {
         };
     }
 
-    public async updateUser(updateUserDto: UpdateUserDto ) {
+    public async updateUser(updateUserDto: UpdateUserDto) {
+        const { file, ...userDto } = updateUserDto.values;
+        let fileUrl = null;
         const user = await prisma.user.findFirst({
             where: {
-                id: updateUserDto.id
+                id: userDto.id
             }
         });
-        if( !user ) throw CustomError.badRequest(`User with id: ${updateUserDto.id} does not exist`)
+        if( !user ) throw CustomError.badRequest(`User with id: ${userDto.id} does not exist`)
+
+        if( file ) {
+            const secure_url = await this.cloudinaryService.uploadImage((file as UploadedFile).tempFilePath);
+            fileUrl = secure_url;
+        }
 
         const updatedUser = await prisma.user.update({
             where: {
                 id: user.id
             },
             data: {
-                ...updateUserDto.values,
-                ...(updateUserDto.password) && { password: bcryptAdapter.hash(updateUserDto.password) }
+                ...userDto,
+                ...(userDto.password) && { password: bcryptAdapter.hash(userDto.password) },
+                ...(fileUrl) && { photoUrl: fileUrl }
             }
         });
 

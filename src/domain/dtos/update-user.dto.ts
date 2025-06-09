@@ -1,3 +1,5 @@
+import { UploadedFile } from "express-fileupload";
+
 export class UpdateUserDto {
 
   private constructor(
@@ -6,6 +8,7 @@ export class UpdateUserDto {
     public name?: string,
     public photoUrl?: string,
     public password?: string,
+    public file?: UploadedFile
   ) {}
 
   get values() {
@@ -15,18 +18,28 @@ export class UpdateUserDto {
     if( this.name ) returnObj.name = this.name;
     if( this.photoUrl ) returnObj.photoUrl = this.photoUrl;
     if( this.password ) returnObj.password = this.password;
+    if( this.id ) returnObj.id = this.id;
+    if( this.file ) returnObj.file = this.file;
 
     return returnObj;
   }
 
   static create( object: { [key:string]:any } ): [string?, UpdateUserDto?] {
-    const { id, email, name, photoUrl, password } = object;
+    const { id, email, name, photoUrl, password, file } = object;
 
     if ( !id || isNaN( Number(id)) ) {
       return ['id must be a valid number'];
     }
 
-    return [undefined, new UpdateUserDto(id, email, name, photoUrl, password)];
+    if( file ) {
+      const validExtensions: string[] = ['png','gif', 'jpg','jpeg']
+      const fileExtension = file.mimetype.split('/').at(1) ?? '';
+      if ( !validExtensions.includes(fileExtension) ) {
+          return ['Invalid file extension'];
+      }
+    }
+
+    return [undefined, new UpdateUserDto(id, email, name, photoUrl, password, file)];
   }
 
 

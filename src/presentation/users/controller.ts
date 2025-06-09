@@ -71,7 +71,7 @@ export class UsersController {
         if( !req?.body?.user ) throw CustomError.badRequest('Token not provided');
         const { user } = req.body;
 
-        const [error, updateUserDto] = UpdateUserDto.create({...req.body, id: user.id});
+        const [error, updateUserDto] = UpdateUserDto.create({...req.body, id: user.id, ...req.params, file: req.body?.files?.at(0)});
         if( error ) throw CustomError.badRequest(error);
 
         this.userService.updateUser(updateUserDto!)

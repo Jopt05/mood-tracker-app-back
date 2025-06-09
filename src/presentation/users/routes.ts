@@ -4,6 +4,8 @@ import { UsersController } from './controller';
 import { AuthMiddleware } from '../middlewares/auth.middleware';
 import { EmailService } from '../services/mailer.service';
 import { envs } from '../../config/envs';
+import { FileUploadMiddleware } from '../middlewares/fileupload.middleware';
+import { CloudinaryService } from '../services/cloudinary.service';
 
 export class UserRoutes {
 
@@ -19,7 +21,9 @@ export class UserRoutes {
       envs.SEND_EMAIL
     );
 
-    const userService = new UserService(emailService);
+    const cloudinaryService = new CloudinaryService();
+
+    const userService = new UserService(emailService, cloudinaryService);
 
     const controller = new UsersController(userService);
     
@@ -29,7 +33,7 @@ export class UserRoutes {
     router.get('/:id', controller.getUser );
     router.post('/', controller.registerUser );
     router.post('/login', controller.loginUser );
-    router.put('/', [ AuthMiddleware.validateJWT ], controller.updateUser );
+    router.put('/', [ AuthMiddleware.validateJWT, FileUploadMiddleware.containFiles ], controller.updateUser );
 
     return router;
   }
