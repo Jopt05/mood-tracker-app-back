@@ -60,7 +60,7 @@ export class UserService {
         const isCorrectPassword = bcryptAdapter.compare(loginUserDto.password, user.password);
         if( !isCorrectPassword ) throw CustomError.badRequest('Invalid credentials');
 
-        const token = await JwtAdapter.generateToken({id: user.id})
+        const token = await JwtAdapter.generateToken({id: user.id}, '365d')
 
         return {
             token
