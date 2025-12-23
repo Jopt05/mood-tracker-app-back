@@ -16,9 +16,9 @@ export class UsersController {
 
   ping = (req: Request, res: Response) => {
     try {
-      return ResponseMapper.success(res, 'pong', 200, { message: 'pong' });
+      ResponseMapper.success(res, 'pong', 200, { message: 'pong' });
     } catch (error) {
-      return ResponseMapper.fail(error,res);
+      ResponseMapper.fail(error,res);
     }
   }
 
