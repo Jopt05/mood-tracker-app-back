@@ -31,6 +31,7 @@ export class UserRoutes {
     router.get('/', [ AuthMiddleware.validateJWT ], controller.getMe );
     router.post('/auth/reset-password', controller.requestResetPassword );
     router.get('/:id', controller.getUser );
+    router.get('/auth/ping', controller.ping );
     router.post('/', controller.registerUser );
     router.post('/login', controller.loginUser );
     router.put('/', [ AuthMiddleware.validateJWT, FileUploadMiddleware.containFiles ], controller.updateUser );

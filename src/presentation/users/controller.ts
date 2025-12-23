@@ -14,6 +14,14 @@ export class UsersController {
     public readonly userService: UserService,
   ) {}
 
+  ping = (req: Request, res: Response) => {
+    try {
+      return ResponseMapper.success(res, 'Pong', 200, { message: 'Pong' })
+    } catch (error) {
+        ResponseMapper.fail(error,res);
+    }
+  }
+
   getMe = (req: Request, res: Response) => {
     try {
       if( !req?.body?.user ) throw CustomError.badRequest('Token not provided');
