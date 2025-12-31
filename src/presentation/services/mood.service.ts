@@ -9,12 +9,14 @@ export class MoodService {
     constructor() {}
 
     public async getMoodsByMonthAndYear( userId: number, month: number, year: number ) {
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 1);
         const moodData = await prisma.moodEntry.findMany({
             where: {
                 authorId: userId,
                 createdAt: {
-                    gte: new Date(year, month, 1),
-                    lte: new Date(year, month + 1, 0)
+                    gte: startDate,
+                    lt: endDate
                 }
             },
             orderBy: {
