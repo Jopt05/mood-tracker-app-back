@@ -13,8 +13,8 @@ export class MoodService {
             where: {
                 authorId: userId,
                 createdAt: {
-                    gte: new Date(year, month - 1, 1),
-                    lte: new Date(year, month, 0)
+                    gte: new Date(year, month, 1),
+                    lte: new Date(year, month + 1, 0)
                 }
             },
             orderBy: {
