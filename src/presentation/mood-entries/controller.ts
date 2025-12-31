@@ -29,6 +29,22 @@ export class MoodController {
         }
     }
 
+    getMoodsByMonthAndYear = (req: Request, res: Response) => {
+        try {
+            const { user } = req.body;
+            if( !user ) throw CustomError.badRequest('Token not provided');
+
+            const { month, year } = req.query;
+            if( !month || !year ) throw CustomError.badRequest('Month and year are required');
+
+            this.moodService.getMoodsByMonthAndYear(user.id, +month, +year)
+                .then((moods) => ResponseMapper.success(res, 'Moods obtained', 200, moods))
+                .catch((error) => ResponseMapper.fail(error, res))
+        } catch (error) {
+            ResponseMapper.fail(error,res);
+        }
+    }
+
     createMood = (req: Request, res: Response) => {
         try {
             const { user } = req.body;

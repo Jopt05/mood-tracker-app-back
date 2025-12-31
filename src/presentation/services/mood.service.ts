@@ -8,6 +8,20 @@ import { CustomError } from "../../domain/errors/custom.error";
 export class MoodService {
     constructor() {}
 
+    public async getMoodsByMonthAndYear( userId: number, month: number, year: number ) {
+        const moodData = await prisma.moodEntry.findMany({
+            where: {
+                authorId: userId,
+                createdAt: {
+                    gte: new Date(year, month - 1, 1),
+                    lte: new Date(year, month, 0)
+                }
+            }
+        });
+
+        return moodData.map(entry => MoodEntity.fromObject(entry));
+    }
+
     public async getMyMood( userId: number, paginationDto: PaginationDto ) {
 
         const { page, limit } = paginationDto;
