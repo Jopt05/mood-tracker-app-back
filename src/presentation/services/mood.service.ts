@@ -16,6 +16,9 @@ export class MoodService {
                     gte: new Date(year, month - 1, 1),
                     lte: new Date(year, month, 0)
                 }
+            },
+            orderBy: {
+                createdAt: "desc"
             }
         });
 
