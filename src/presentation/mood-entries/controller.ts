@@ -34,7 +34,7 @@ export class MoodController {
             const { user } = req.body;
             if( !user ) throw CustomError.badRequest('Token not provided');
 
-            const { month, year } = req.query;
+            const { month, year } = req.params;
             if( !month || !year ) throw CustomError.badRequest('Month and year are required');
 
             this.moodService.getMoodsByMonthAndYear(user.id, +month, +year)
