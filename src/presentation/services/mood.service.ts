@@ -4,36 +4,25 @@ import { PaginationDto } from "../../domain/dtos/shared/pagination.dto";
 import { UpdateMoodDto } from "../../domain/dtos/update-mood.dto";
 import { MoodEntity } from "../../domain/entities/mood.entity";
 import { CustomError } from "../../domain/errors/custom.error";
+import { YearMonthDto } from "../../domain/dtos/year-month.dto";
 
 export class MoodService {
     constructor() {}
 
-    public async getMoodsByMonthAndYear( userId: number, month: number, year: number ) {
-        const startDate = new Date(year, month - 1, 1);
-        const endDate = new Date(year, month, 1);
+    public async getMyMood( userId: number, paginationDto: PaginationDto, yearMonthDto?: YearMonthDto ) {
+
+        const { page, limit } = paginationDto;
+        const { year, month } = yearMonthDto || {};
+
         const moodData = await prisma.moodEntry.findMany({
             where: {
                 authorId: userId,
-                createdAt: {
-                    gte: startDate,
-                    lt: endDate
-                }
-            },
-            orderBy: {
-                createdAt: "desc"
-            }
-        });
-
-        return moodData.map(entry => MoodEntity.fromObject(entry));
-    }
-
-    public async getMyMood( userId: number, paginationDto: PaginationDto ) {
-
-        const { page, limit } = paginationDto;
-
-        const moodData = await prisma.moodEntry.findMany({
-            where: {
-                authorId: userId
+                ...(year && month && {
+                    createdAt: {
+                        gte: new Date(year, month - 1, 1),
+                        lte: new Date(year, month, 1)
+                    }
+                })
             },
             skip: (page - 1) * limit,
             take: limit,
@@ -44,7 +33,13 @@ export class MoodService {
 
         const totalCount = await prisma.moodEntry.count({
             where: {
-                authorId: userId
+                authorId: userId,
+                ...(year && month && {
+                    createdAt: {
+                        gte: new Date(year, month - 1, 1),
+                        lte: new Date(year, month, 1)
+                    }
+                })
             }
         });
 

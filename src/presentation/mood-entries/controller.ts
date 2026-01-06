@@ -5,6 +5,7 @@ import { CustomError } from "../../domain/errors/custom.error";
 import { CreateMoodDto } from "../../domain/dtos/create-mood.dto";
 import { UpdateMoodDto } from "../../domain/dtos/update-mood.dto";
 import { PaginationDto } from "../../domain/dtos/shared/pagination.dto";
+import { YearMonthDto } from "../../domain/dtos/year-month.dto";
 
 export class MoodController {
 
@@ -17,28 +18,14 @@ export class MoodController {
             const { user } = req.body;
             if( !user ) throw CustomError.notFound('Token not sent');
 
-            const { page = 1, limit = 10 } = req.query;
+            const { page = 1, limit = 10, month = "", year = "" } = req.query;
             const [ error, paginationDto ] = PaginationDto.create( +page, +limit );
+            const [ error2, yearMonthDto ] = YearMonthDto.create({ year, month });
             if( error ) throw CustomError.badRequest(error);
+            if( error2 ) throw CustomError.badRequest(error2);
 
-            this.moodService.getMyMood(user.id, paginationDto!)
+            this.moodService.getMyMood(user.id, paginationDto!, yearMonthDto!)
                 .then((user) => ResponseMapper.success(res, 'Moods obtained', 200, user))
-                .catch((error) => ResponseMapper.fail(error, res))
-        } catch (error) {
-            ResponseMapper.fail(error,res);
-        }
-    }
-
-    getMoodsByMonthAndYear = (req: Request, res: Response) => {
-        try {
-            const { user } = req.body;
-            if( !user ) throw CustomError.badRequest('Token not provided');
-
-            const { month, year } = req.params;
-            if( !month || !year ) throw CustomError.badRequest('Month and year are required');
-
-            this.moodService.getMoodsByMonthAndYear(user.id, +month, +year)
-                .then((moods) => ResponseMapper.success(res, 'Moods obtained', 200, moods))
                 .catch((error) => ResponseMapper.fail(error, res))
         } catch (error) {
             ResponseMapper.fail(error,res);
