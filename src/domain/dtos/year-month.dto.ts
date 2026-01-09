@@ -13,6 +13,7 @@ export class YearMonthDto {
         if ( year && +year <= 0 ) return ['Year must be greater than 0'];
         if ( month && +month <= 0 ) return ['Month must be greater than 0'];
         if ( month && +month > 12 ) return ['Month must be less than 12'];
+        if ( month && !year ) return ['Year is required when month is provided'];
 
         return [undefined, new YearMonthDto(year, month)];
     }

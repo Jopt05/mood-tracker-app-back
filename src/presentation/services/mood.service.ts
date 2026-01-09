@@ -14,16 +14,25 @@ export class MoodService {
         const { page, limit } = paginationDto;
         const { year, month } = yearMonthDto || {};
 
+        const whereOptions: any  = {};
+
+        whereOptions.authorId = userId;
+
+        if ( year && month ) {
+            whereOptions.createdAt = {
+                gte: new Date(year, month - 1, 1),
+                lte: new Date(year, month, 1)
+            }
+        };
+        if( year && !month ) {
+            whereOptions.createdAt = {
+                gte: new Date(year, 0, 1),
+                lte: new Date(year, 11, 31)
+            }
+        }; 
+
         const moodData = await prisma.moodEntry.findMany({
-            where: {
-                authorId: userId,
-                ...(year && month && {
-                    createdAt: {
-                        gte: new Date(year, month - 1, 1),
-                        lte: new Date(year, month, 1)
-                    }
-                })
-            },
+            where: whereOptions,
             skip: (page - 1) * limit,
             take: limit,
             orderBy: {
