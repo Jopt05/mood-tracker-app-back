@@ -26,7 +26,7 @@ model MoodEntry {
   mood Mood @default(NEUTRAL)
   sleep Sleep @default(ZER0_TWO)
   reflection String?
-  createdAt DateTime @default(now())
+  createdAt DateTime @map("created_at") @default(now())
   updatedAt DateTime @default(now())
   authorId Int
   author user @relation(fields: [authorId], references: [id])
