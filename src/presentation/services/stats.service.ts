@@ -7,6 +7,18 @@ export class StatService {
 
     constructor(){}
 
+    /**
+     * Calcula el promedio de mood y sleep de un usuario durante un período específico de días hacia atrás.
+     * Los valores de mood y sleep se convierten a escala numérica (1-5) para calcular el promedio.
+     * 
+     * @param userId - ID del usuario
+     * @param daysRangeDto - DTO con el rango de días hacia atrás desde hoy
+     * @returns Objeto con los promedios calculados: { avg_mood: number, avg_sleep: number }
+     * 
+     * @example
+     * const averages = await statService.getAverage(123, new DaysRangeDto({ daysRange: 7 }));
+     * // { avg_mood: 3.5, avg_sleep: 4.2 }
+     */
     public async getAverage(
         userId: number, 
         daysRangeDto: DaysRangeDto
