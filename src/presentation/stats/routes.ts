@@ -16,6 +16,7 @@ export class StatsRoutes {
         );
 
         router.get('/average', [AuthMiddleware.validateJWT], controller.getAverage)
+        router.get('/distribution', [AuthMiddleware.validateJWT], controller.getDistribution)
 
         return router;
     }

@@ -29,4 +29,22 @@ export class StatsController {
         }
     }
 
+    getDistribution = (req: Request, res: Response) => {
+        try {
+            const { user } = req.body;
+            if( !user ) throw CustomError.badRequest('Token not sent');
+
+            const { days = "" } = req.query;
+
+            const [ error, daysRangeDto ] = DaysRangeDto.create({days});
+            if( error ) throw CustomError.badRequest(error);
+
+            this.statsService.getDistribution(user.id, daysRangeDto!)
+                .then((distribution) => ResponseMapper.success(res, 'Distribution obtained', 200, distribution))
+                .catch((error) => ResponseMapper.fail(error, res))
+        } catch (error) {
+            ResponseMapper.fail(error, res);
+        }
+    }
+
 }
