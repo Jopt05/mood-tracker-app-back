@@ -13,16 +13,17 @@ export class StatService {
     ) {
         const stats = await prisma.$queryRaw<
             { avg_mood: number; avg_sleep: number }[]
-        >`
-            SELECT
-                AVG(
-                CASE mood
-                    WHEN 'VERY_SAD' THEN 1
-                    WHEN 'SAD' THEN 2
-                    WHEN 'NEUTRAL' THEN 3
-                    WHEN 'HAPPY' THEN 4
-                    WHEN 'VERY_HAPPY' THEN 5
-                END
+        >(
+            Prisma.sql`
+                SELECT
+                    AVG(
+                    CASE mood
+                        WHEN 'VERY_SAD' THEN 1
+                        WHEN 'SAD' THEN 2
+                        WHEN 'NEUTRAL' THEN 3
+                        WHEN 'HAPPY' THEN 4
+                        WHEN 'VERY_HAPPY' THEN 5
+                    END
                 ) AS avg_mood,
                 AVG(
                 CASE sleep
@@ -34,9 +35,10 @@ export class StatService {
                 END
                 ) AS avg_sleep
             FROM mood_entries
-            WHERE "authorId" = ${userId} 
-            AND "createdAt" >= NOW() - INTERVAL '${daysRangeDto.daysRange} days';
+                WHERE "authorId" = ${userId} 
+                AND "createdAt" >= NOW() - INTERVAL '${Prisma.raw(daysRangeDto.daysRange.toString())} days'
         `
+        );
         return stats?.[0];
     }
 
