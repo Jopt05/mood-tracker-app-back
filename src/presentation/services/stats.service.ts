@@ -37,7 +37,7 @@ export class StatService {
                     END AS avg_mood
                 FROM mood_entries
                 WHERE "authorId" = ${userId}
-                AND "created_at" >= NOW() - INTERVAL '${Prisma.raw(daysRangeDto.daysRange.toString())} days'
+                AND "createdAt" >= NOW() - INTERVAL '${Prisma.raw(daysRangeDto.daysRange.toString())} days'
                 GROUP BY mood
                 ORDER BY COUNT(*) DESC
                 LIMIT 1
@@ -58,7 +58,7 @@ export class StatService {
                     END AS avg_sleep
                 FROM mood_entries
                 WHERE "authorId" = ${userId}
-                AND "created_at" >= NOW() - INTERVAL '${Prisma.raw(daysRangeDto.daysRange.toString())} days'
+                AND "createdAt" >= NOW() - INTERVAL '${Prisma.raw(daysRangeDto.daysRange.toString())} days'
                 GROUP BY sleep
                 ORDER BY COUNT(*) DESC
                 LIMIT 1
@@ -118,7 +118,7 @@ export class StatService {
                 SELECT mood, COUNT(*) as count
                 FROM mood_entries
                 WHERE "authorId" = ${userId}
-                AND "created_at" >= NOW() - INTERVAL '${Prisma.raw(daysRangeDto.daysRange.toString())} days'
+                AND "createdAt" >= NOW() - INTERVAL '${Prisma.raw(daysRangeDto.daysRange.toString())} days'
                 GROUP BY mood
             `
         );
@@ -131,7 +131,7 @@ export class StatService {
                 SELECT sleep, COUNT(*) as count
                 FROM mood_entries
                 WHERE "authorId" = ${userId}
-                AND "created_at" >= NOW() - INTERVAL '${Prisma.raw(daysRangeDto.daysRange.toString())} days'
+                AND "createdAt" >= NOW() - INTERVAL '${Prisma.raw(daysRangeDto.daysRange.toString())} days'
                 GROUP BY sleep
             `
         );
