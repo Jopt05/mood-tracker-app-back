@@ -8,50 +8,67 @@ export class StatService {
     constructor(){}
 
     /**
-     * Calcula el promedio de mood y sleep de un usuario durante un período específico de días hacia atrás.
-     * Los valores de mood y sleep se convierten a escala numérica (1-5) para calcular el promedio.
+     * Obtiene el mood y sleep más frecuentes (moda) de un usuario durante un período específico de días.
+     * Devuelve los valores en escala numérica (1-5) para mantener compatibilidad con el frontend.
      * 
      * @param userId - ID del usuario
      * @param daysRangeDto - DTO con el rango de días hacia atrás desde hoy
-     * @returns Objeto con los promedios calculados: { avg_mood: number, avg_sleep: number }
+     * @returns Objeto con los valores más frecuentes en escala numérica: { avg_mood: number, avg_sleep: number }
      * 
      * @example
-     * const averages = await statService.getAverage(123, new DaysRangeDto({ daysRange: 7 }));
-     * // { avg_mood: 3.5, avg_sleep: 4.2 }
+     * const stats = await statService.getAverage(123, new DaysRangeDto({ daysRange: 7 }));
+     * // { avg_mood: 4, avg_sleep: 4 } (HAPPY, SEVEN_EIGHT)
      */
     public async getAverage(
         userId: number, 
         daysRangeDto: DaysRangeDto
     ) {
-        const stats = await prisma.$queryRaw<
-            { avg_mood: number; avg_sleep: number }[]
+        const moodResult = await prisma.$queryRaw<
+            { avg_mood: number }[]
         >(
             Prisma.sql`
                 SELECT
-                    AVG(
                     CASE mood
                         WHEN 'VERY_SAD' THEN 1
                         WHEN 'SAD' THEN 2
                         WHEN 'NEUTRAL' THEN 3
                         WHEN 'HAPPY' THEN 4
                         WHEN 'VERY_HAPPY' THEN 5
-                    END
-                ) AS avg_mood,
-                AVG(
-                CASE sleep
-                    WHEN 'ZER0_TWO' THEN 1
-                    WHEN 'THREE_FOUR' THEN 2
-                    WHEN 'FIVE_SIX' THEN 3
-                    WHEN 'SEVEN_EIGHT' THEN 4
-                    WHEN 'NINE' THEN 5
-                END
-                ) AS avg_sleep
-            FROM mood_entries
-                WHERE "authorId" = ${userId} 
-                AND "createdAt" >= NOW() - INTERVAL '${Prisma.raw(daysRangeDto.daysRange.toString())} days'
-        `
+                    END AS avg_mood
+                FROM mood_entries
+                WHERE "authorId" = ${userId}
+                AND "created_at" >= NOW() - INTERVAL '${Prisma.raw(daysRangeDto.daysRange.toString())} days'
+                GROUP BY mood
+                ORDER BY COUNT(*) DESC
+                LIMIT 1
+            `
         );
-        return stats?.[0];
+
+        const sleepResult = await prisma.$queryRaw<
+            { avg_sleep: number }[]
+        >(
+            Prisma.sql`
+                SELECT
+                    CASE sleep
+                        WHEN 'ZER0_TWO' THEN 1
+                        WHEN 'THREE_FOUR' THEN 2
+                        WHEN 'FIVE_SIX' THEN 3
+                        WHEN 'SEVEN_EIGHT' THEN 4
+                        WHEN 'NINE' THEN 5
+                    END AS avg_sleep
+                FROM mood_entries
+                WHERE "authorId" = ${userId}
+                AND "created_at" >= NOW() - INTERVAL '${Prisma.raw(daysRangeDto.daysRange.toString())} days'
+                GROUP BY sleep
+                ORDER BY COUNT(*) DESC
+                LIMIT 1
+            `
+        );
+
+        return {
+            avg_mood: moodResult?.[0]?.avg_mood ?? null,
+            avg_sleep: sleepResult?.[0]?.avg_sleep ?? null
+        };
     }
 
     /**
@@ -101,7 +118,7 @@ export class StatService {
                 SELECT mood, COUNT(*) as count
                 FROM mood_entries
                 WHERE "authorId" = ${userId}
-                AND "createdAt" >= NOW() - INTERVAL '${Prisma.raw(daysRangeDto.daysRange.toString())} days'
+                AND "created_at" >= NOW() - INTERVAL '${Prisma.raw(daysRangeDto.daysRange.toString())} days'
                 GROUP BY mood
             `
         );
@@ -114,7 +131,7 @@ export class StatService {
                 SELECT sleep, COUNT(*) as count
                 FROM mood_entries
                 WHERE "authorId" = ${userId}
-                AND "createdAt" >= NOW() - INTERVAL '${Prisma.raw(daysRangeDto.daysRange.toString())} days'
+                AND "created_at" >= NOW() - INTERVAL '${Prisma.raw(daysRangeDto.daysRange.toString())} days'
                 GROUP BY sleep
             `
         );
