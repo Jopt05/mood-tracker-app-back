@@ -7,7 +7,7 @@ A RESTful API backend for tracking daily moods, sleep patterns, and personal ref
 - **User Management**: Registration, authentication, and profile management with JWT
 - **Mood Tracking**: Log daily mood entries with mood levels, sleep hours, and reflections
 - **Statistics & Analytics**: 
-  - Calculate average mood and sleep over custom time periods
+  - Find most frequent mood and sleep patterns over custom time periods
   - View percentage distribution of mood and sleep patterns
   - Analyze trends with flexible date ranges
 - **Advice System**: Get personalized advice based on mood patterns
@@ -53,7 +53,7 @@ src/
 - One-to-many relationship with mood entries
 
 ### MoodEntry Model
-- Mood levels: VERY_SAD, SAD, NEUTRAL, HAPPY, VERY_HAPPY (mapped to 1-5 scale for analytics)
+- Mood levels: VERY_SAD, SAD, NEUTRAL, HAPPY, VERY_HAPPY
 - Sleep tracking: ZER0_TWO, THREE_FOUR, FIVE_SIX, SEVEN_EIGHT, NINE (0-2, 3-4, 5-6, 7-8, 9+ hours)
 - Optional reflection text
 - Timestamps for creation and updates
@@ -102,7 +102,7 @@ src/
 - `DELETE /api/mood-entries/:id` - Delete mood entry
 
 ### Statistics
-- `GET /api/stats/average?daysRange=7` - Get average mood and sleep over specified days
+- `GET /api/stats/average?daysRange=7` - Get most frequent mood and sleep over specified days
 - `GET /api/stats/distribution?daysRange=30` - Get percentage distribution of moods and sleep patterns
 
 ### Advices
