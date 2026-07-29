@@ -10,9 +10,9 @@ export const envs = {
   API_NINJAS_KEY: get('API_NINJAS_KEY').required().asString(),
 
   SEND_EMAIL: get('SEND_EMAIL').default('false').asBool(),
-  MAILER_SERVICE: get('MAILER_SERVICE').required().asString(),
-  MAILER_EMAIL: get('MAILER_EMAIL').required().asString(),
-  MAILER_SECRET_KEY: get('MAILER_SECRET_KEY').required().asString(),
+  MAILJET_API_KEY: get('MAILJET_API_KEY').required().asString(),
+  MAILJET_SECRET_KEY: get('MAILJET_SECRET_KEY').required().asString(),
+  MAIL_FROM: get('MAIL_FROM').required().asString(),
   FRONT_URL: get('FRONT_URL').required().asString(),
 
 }

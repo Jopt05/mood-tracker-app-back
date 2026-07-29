@@ -15,9 +15,9 @@ export class UserRoutes {
     const router = Router();
 
     const emailService = new EmailService(
-      envs.MAILER_SERVICE,
-      envs.MAILER_EMAIL,
-      envs.MAILER_SECRET_KEY,
+      envs.MAILJET_API_KEY,
+      envs.MAILJET_SECRET_KEY,
+      envs.MAIL_FROM,
       envs.SEND_EMAIL
     );
 
@@ -30,6 +30,8 @@ export class UserRoutes {
     // Definir las rutas
     router.get('/', [ AuthMiddleware.validateJWT ], controller.getMe );
     router.post('/auth/reset-password', controller.requestResetPassword );
+    router.post('/auth/verify-email', controller.verifyEmail );
+    router.post('/auth/resend-verification', controller.resendVerificationEmail );
     router.get('/:id', controller.getUser );
     router.get('/auth/ping', controller.ping );
     router.post('/', controller.registerUser );

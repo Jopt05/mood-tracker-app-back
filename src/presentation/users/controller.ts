@@ -9,7 +9,6 @@ import { RequestResetDto } from '../../domain/dtos/request-reset.dto';
 
 export class UsersController {
 
-  // DI
   constructor(
     public readonly userService: UserService,
   ) {}
@@ -96,7 +95,33 @@ export class UsersController {
         if( error ) throw CustomError.badRequest(error);
 
         this.userService.sendResetPassword(resetPassDto?.email!)
-            .then((user) => ResponseMapper.success(res, 'Email sent', 200, user))
+            .then((result) => ResponseMapper.success(res, 'Email sent', 200, result))
+            .catch((error) => ResponseMapper.fail(error, res))
+    } catch (error) {
+        ResponseMapper.fail(error, res);
+    }
+  }
+
+  verifyEmail = (req: Request, res: Response) => {
+    try {
+        const { token } = req.body;
+        if( !token ) throw CustomError.badRequest('Token is required');
+
+        this.userService.verifyEmail(token)
+            .then((result) => ResponseMapper.success(res, 'Email verified', 200, result))
+            .catch((error) => ResponseMapper.fail(error, res))
+    } catch (error) {
+        ResponseMapper.fail(error, res);
+    }
+  }
+
+  resendVerificationEmail = (req: Request, res: Response) => {
+    try {
+        const [error, resetPassDto] = RequestResetDto.create(req.body);
+        if( error ) throw CustomError.badRequest(error);
+
+        this.userService.resendVerificationEmail(resetPassDto?.email!)
+            .then((result) => ResponseMapper.success(res, 'Verification email sent', 200, result))
             .catch((error) => ResponseMapper.fail(error, res))
     } catch (error) {
         ResponseMapper.fail(error, res);

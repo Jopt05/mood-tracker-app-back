@@ -3,6 +3,7 @@ export class UserEntity {
   constructor(
     public id: number,
     public email: string,
+    public emailVerified: boolean,
     public name: string,
     public password: string,
     public createdAt: Date,
@@ -11,16 +12,14 @@ export class UserEntity {
   ) {}
 
   public static fromObject( object: {[key: string]: any} ): UserEntity {
-    const { id, email, password, name, createdAt, updatedAt, photoUrl } = object;
+    const { id, email, emailVerified, password, name, createdAt, updatedAt, photoUrl } = object;
     if ( !id ) throw 'Id is required';
     if ( !email ) throw 'Email is required';
     if ( !password ) throw 'Password is required';
     if ( !createdAt ) throw 'createdAt is required';
     if ( !updatedAt ) throw 'updatedAt is required';
 
-    return new UserEntity(id, email, name, password, createdAt, updatedAt, photoUrl);
+    return new UserEntity(id, email, emailVerified ?? false, name, password, createdAt, updatedAt, photoUrl);
   }
 
 }
-
-

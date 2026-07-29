@@ -1,4 +1,4 @@
-import nodemailer, { Transporter } from 'nodemailer';
+import { Client } from 'node-mailjet';
 
 export interface SendMailOptions {
   to: string | string[];
@@ -6,55 +6,47 @@ export interface SendMailOptions {
   htmlBody: string;
 }
 
-
 export class EmailService {
 
-  private transporter: Transporter;
-
+  private client: Client;
 
   constructor(
-    mailerService: string,
-    mailerEmail: string,
-    senderEmailPassword: string,
+    apiKey: string,
+    secretKey: string,
+    private readonly fromEmail: string,
     private readonly postToProvider: boolean,
   ) {
-
-    this.transporter = nodemailer.createTransport( {
-      service: mailerService,
-      auth: {
-        user: mailerEmail,
-        pass: senderEmailPassword,
-      }
-    });
-
+    this.client = new Client({ apiKey, apiSecret: secretKey });
   }
 
+  async sendEmail(options: SendMailOptions): Promise<boolean> {
+    const { to, subject, htmlBody } = options;
 
-  async sendEmail( options: SendMailOptions ): Promise<boolean> {
+    if (!this.postToProvider) return true;
 
-    const { to, subject, htmlBody} = options;
-
+    const recipients = Array.isArray(to)
+      ? to.map(email => ({ Email: email }))
+      : [{ Email: to }];
 
     try {
+      const result = await this.client
+        .post('send', { version: 'v3.1' })
+        .request({
+          Messages: [
+            {
+              From: { Email: this.fromEmail },
+              To: recipients,
+              Subject: subject,
+              HTMLPart: htmlBody,
+            },
+          ],
+        });
 
-      if ( !this.postToProvider ) return true;
-
-      const sentInformation = await this.transporter.sendMail( {
-        to: to,
-        subject: subject,
-        html: htmlBody,
-      });
-
-      console.log({ sentInformation });
-
+      console.log({ mailjetResponse: result.body });
       return true;
-    } catch ( error ) {
-      console.log(error);
+    } catch (error) {
+      console.error('Mailjet error:', error);
       return false;
     }
-
   }
-
-
-
 }
